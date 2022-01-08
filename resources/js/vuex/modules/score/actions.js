@@ -9,6 +9,11 @@ export default {
             .then(response => commit('FETCH', response.data))
             .catch();
     },
+    filter({ commit }, params) {
+        return axios.post(paths.score, params)
+            .then(response => commit('FETCH', response.data))
+            .catch();
+    },
     show({ commit }, id) {
         return axios.get(`${paths.score}/${id}`)
             .then(response => commit('SHOW', response.data))
@@ -26,7 +31,7 @@ export default {
             });
     },
     add({ commit }, rehearsal) {
-        return axios.post(`${paths.score}`, rehearsal)
+        return axios.post(`${paths.score}/add`, rehearsal)
             .then(response => {
                 commit('SHOW', response.data);
             });

@@ -13,7 +13,7 @@ trait Searchable
         }
     }
 
-    public function getSearchIndex()
+    public static function getSearchIndex()
     {
         return env('ELASTICSEARCH_INDEX');
     }
@@ -35,8 +35,7 @@ trait Searchable
     public function elasticsearchIndex(Client $elasticsearchClient)
     {
         $elasticsearchClient->index([
-            'index' => $this->getTable(),
-            'type' => '_doc',
+            'index' => self::getSearchIndex(),
             'id' => $this->getKey(),
             'body' => $this->toElasticsearchDocumentArray(),
         ]);
@@ -45,8 +44,7 @@ trait Searchable
     public function elasticsearchDelete(Client $elasticsearchClient)
     {
         $elasticsearchClient->delete([
-            'index' => $this->getTable(),
-            'type' => '_doc',
+            'index' => self::getSearchIndex(),
             'id' => $this->getKey(),
         ]);
     }

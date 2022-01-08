@@ -16,7 +16,6 @@ class ElasticsearchObserver
     {
         $this->elasticsearch->index([
             'index' => $model->getSearchIndex(),
-            'type' => $model->getSearchType(),
             'id' => $model->getKey(),
             'body' => $model->toSearchArray(),
         ]);
@@ -26,7 +25,6 @@ class ElasticsearchObserver
     {
         $this->elasticsearch->delete([
             'index' => $model->getSearchIndex(),
-            'type' => $model->getSearchType(),
             'id' => $model->getKey(),
         ]);
     }

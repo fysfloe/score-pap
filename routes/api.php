@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FilterController;
 use App\Http\Controllers\ScoreController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['api'], function () {
     Route::get('/score', [ScoreController::class, 'index']);
+    Route::post('/score', [ScoreController::class, 'index']);
     Route::get('/score/{id}', [ScoreController::class, 'get']);
-    Route::post('/score', [ScoreController::class, 'create']);
+    Route::post('/score/add', [ScoreController::class, 'create']);
+
+    Route::get('/filters', [FilterController::class, 'index']);
 });

@@ -1,3 +1,4 @@
 export default {
-    score: '/api/score'
+    score: '/api/score',
+    filters: '/api/filters'
 }

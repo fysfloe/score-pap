@@ -14,14 +14,14 @@ class ScoreController extends Controller
     public function index(Request $request): JsonResponse
     {
         return response()->json(
-            $this->scoreRepository->search($request->get('search'))
+            $this->scoreRepository->search($request->get('search'), $request->get('filters'))
         );
     }
 
     public function get(int $id): JsonResponse
     {
         return response()->json(
-            $this->scoreRepository->search(`_id:$id`)
+            $this->scoreRepository->search("_id:$id")
         );
     }
 

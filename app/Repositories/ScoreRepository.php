@@ -11,32 +11,54 @@ class ScoreRepository
 {
     public function __construct(private Client $elasticsearch) {}
 
-    public function search(?string $query = null): Collection
+    public function search(?string $search = null, ?array $filters = null): Collection
     {
-        $items = $this->searchOnElasticsearch($query);
+        $items = $this->searchOnElasticsearch($search, $filters);
 
         return $this->buildCollection($items);
     }
 
-    private function searchOnElasticsearch(?string $query = null): array
+    public function getAllFieldValues(string $fieldName): array
     {
-        $model = new Score();
+        $aggregationName = $fieldName . '_values';
 
-        if (null === $query) {
-            $query = [
-                'match_all' => new \stdClass(),
-            ];
+        $result = $this->elasticsearch->search([
+            'index' => Score::getSearchIndex(),
+            'body' => [
+                'aggs' => [
+                    $aggregationName => [
+                        'terms' => ['field' => $fieldName . '.raw', 'size' => 10000]
+                    ]
+                ],
+                'size' => 0
+            ]
+        ]);
+
+        return Arr::pluck($result['aggregations'][$aggregationName]['buckets'], 'key');
+    }
+
+    private function searchOnElasticsearch(?string $search = null, ?array $filters = null): array
+    {
+        $query = [];
+
+        if (null === $search) {
+            $query['bool']['must'][]['match_all'] = new \stdClass();
         } else {
-            $query = [
-                'query_string' => [
-                    'query' => $query
-                ]
+            $query['bool']['must'][]['query_string'] = [
+                'query' => $search
             ];
         }
 
+        if (!empty($filters)) {
+            foreach ($filters as $key => $terms) {
+                if (!empty($terms)) {
+                    $query['bool']['must'][]['terms'][$key . '.raw'] = $terms;
+                }
+            }
+        }
+
         return $this->elasticsearch->search([
-            'index' => $model->getSearchIndex(),
-            'type' => $model->getSearchType(),
+            'index' => Score::getSearchIndex(),
             'body' => [
                 'query' => $query,
             ],
@@ -51,5 +73,10 @@ class ScoreRepository
             ->sortBy(function ($score) use ($ids) {
                 return array_search($score->getKey(), $ids);
             });
+    }
+
+    private function getSearchType(): string
+    {
+        return (new Score())->getSearchType();
     }
 }
