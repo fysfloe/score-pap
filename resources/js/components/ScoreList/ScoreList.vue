@@ -15,11 +15,21 @@
                 <filters @filter-update="submitSearch" />
             </div>
             <div class="eight columns">
-                <div class="list-results">
+                <loader v-if="loading" />
+
+                <div v-else class="list-results">
                     <ul v-if="scores.length > 0">
                         <li v-for="score in scores">
                             <h2>{{ score.title }}</h2>
                             <span>{{ score.author }}</span>
+
+                            <div class="tag-list">
+                                <div class="tag" v-if="score.lineup">{{ score.lineup }}</div>
+                                <div class="tag" v-if="score.type">{{ score.type }}</div>
+                                <div class="tag" v-if="score.era">{{ score.era }}</div>
+                                <div class="tag" v-if="score.genre">{{ score.genre }}</div>
+                                <div class="tag" v-if="score.severity">{{ score.severity }}</div>
+                            </div>
                         </li>
                     </ul>
 
@@ -35,10 +45,11 @@
 <script>
 import { mapState } from 'vuex';
 import Filters from '../Search/Filters';
+import Loader from '../Loader';
 
 export default {
     name: 'ScoreList',
-    components: {Filters},
+    components: {Loader, Filters},
     computed: {
         ...mapState({
             scores: state => state.score.items,
@@ -47,18 +58,24 @@ export default {
     },
     data () {
         return {
-            search: null
+            search: null,
+            loading: false
         }
     },
     mounted () {
+        this.loading = true;
+
         this.$store.dispatch('score/fetch')
+            .then(() => this.loading = false);
     },
     methods: {
         submitSearch () {
+            this.loading = true;
+
             this.$store.dispatch('score/filter', {
                 search: this.search,
                 filters: this.selectedFilters
-            })
+            }).then(() => this.loading = false);
         }
     }
 }
@@ -84,6 +101,22 @@ export default {
                     font-size: 2rem;
                     font-weight: bold;
                     margin-bottom: 0.5rem;
+                }
+
+                .tag-list {
+                    display: flex;
+                    margin-top: 0.5rem;
+
+                    .tag {
+                        //color: white;
+                        background: lightgray;
+                        font-weight: bold;
+                        font-size: 0.8em;
+                        border: 0.2rem solid lightgray;
+                        padding: 0.25rem;
+                        border-radius: 1rem;
+                        margin-right: 0.5rem;
+                    }
                 }
             }
         }
