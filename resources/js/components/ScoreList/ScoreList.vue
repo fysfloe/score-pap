@@ -20,16 +20,37 @@
                 <div v-else class="list-results">
                     <ul v-if="scores.length > 0">
                         <li v-for="score in scores">
-                            <h2>{{ score.title }}</h2>
-                            <span>{{ score.author }}</span>
+                            <router-link :to="`/edit/${score.id}`">
+                                <div class="row">
+                                    <div class="ten columns">
+                                        <h2>{{ score.title }}</h2>
+                                        <span>{{ score.author }}</span>
 
-                            <div class="tag-list">
-                                <div class="tag" v-if="score.lineup">{{ score.lineup }}</div>
-                                <div class="tag" v-if="score.type">{{ score.type }}</div>
-                                <div class="tag" v-if="score.era">{{ score.era }}</div>
-                                <div class="tag" v-if="score.genre">{{ score.genre }}</div>
-                                <div class="tag" v-if="score.severity">{{ score.severity }}</div>
-                            </div>
+                                        <div class="tag-list">
+                                            <div class="tag" v-if="score.lineup">
+                                                <i class="gg-smile" />{{ score.lineup }}
+                                            </div>
+                                            <div class="tag" v-if="score.type">
+                                                <i class="gg-play-list" />{{ score.type }}
+                                            </div>
+                                            <div class="tag" v-if="score.era">
+                                                <i class="gg-time" />{{ score.era }}
+                                            </div>
+                                            <div class="tag" v-if="score.genre">
+                                                <i class="gg-music" />{{ score.genre }}
+                                            </div>
+                                            <div class="tag" v-if="score.severity">
+                                                <i class="gg-arrows-v" />{{ score.severity }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="two columns file-download">
+                                        <a :href="`storage/${score.file_path}`" target="_blank">
+                                            <i class="gg-file-document"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </router-link>
                         </li>
                     </ul>
 
@@ -89,13 +110,19 @@ export default {
             list-style: none;
 
             li {
-                &:first-child {
-                    border-top: 0.1rem solid lightgray;
+                border: 0.1rem solid lightgrey;
+                border-radius: 1rem;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+
+                &:hover {
+                    border-color: #33C3F0;
                 }
 
-                border-bottom: 0.1rem solid lightgray;
-                padding: 1.5rem 0;
-                margin-bottom: 0;
+                > a {
+                    text-decoration: none;
+                    color: inherit;
+                }
 
                 h2 {
                     font-size: 2rem;
@@ -103,20 +130,35 @@ export default {
                     margin-bottom: 0.5rem;
                 }
 
+                .row {
+                    align-items: stretch;
+                    display: flex;
+                }
+
                 .tag-list {
                     display: flex;
                     margin-top: 0.5rem;
 
                     .tag {
-                        //color: white;
-                        background: lightgray;
+                        background: lightgrey;
                         font-weight: bold;
                         font-size: 0.8em;
-                        border: 0.2rem solid lightgray;
-                        padding: 0.25rem;
+                        padding: 0.25rem 0.75rem;
                         border-radius: 1rem;
                         margin-right: 0.5rem;
+                        display: flex;
+                        align-items: center;
+
+                        i {
+
+                        }
                     }
+                }
+
+                .file-download {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                 }
             }
         }

@@ -24,14 +24,15 @@ export default {
             .then(() => this.dispatch(`${namespace}/fetch`))
             .catch();
     },
-    edit({ commit }, rehearsal) {
-        return axios.put(`${paths.score}/${rehearsal.id}`, rehearsal)
+    edit({ commit }, score) {
+        console.log(score);
+        return axios.put(`${paths.score}/${score.id}`, score)
             .then(response => {
                 commit('SHOW', response.data);
             });
     },
-    add({ commit }, rehearsal) {
-        return axios.post(`${paths.score}/add`, rehearsal)
+    add({ commit }, score) {
+        return axios.post(`${paths.score}/add`, score)
             .then(response => {
                 commit('SHOW', response.data);
             });

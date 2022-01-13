@@ -13,7 +13,16 @@ class Score extends Model
     use Searchable;
     use SoftDeletes;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'file_path',
+        'title',
+        'author',
+        'lineup',
+        'type',
+        'era',
+        'genre',
+        'severity',
+    ];
 
     public function toElasticsearchDocumentArray(): array
     {

@@ -20,6 +20,7 @@ Route::group(['api'], function () {
     Route::post('/score', [ScoreController::class, 'index']);
     Route::get('/score/{id}', [ScoreController::class, 'get']);
     Route::post('/score/add', [ScoreController::class, 'create']);
+    Route::put('/score/{id}', [ScoreController::class, 'edit']);
 
     Route::get('/filters', [FilterController::class, 'index']);
 });
