@@ -22,9 +22,13 @@ class ScoreController extends Controller
 
     public function get(int $id): JsonResponse
     {
-        return response()->json(
-            $this->scoreRepository->search("_id:$id")[0]
-        );
+        if (env('ELASTICSEARCH_ENABLED')) {
+            return response()->json(
+                $this->scoreRepository->search("_id:$id")[0]
+            );
+        } else {
+            return response()->json(Score::find($id));
+        }
     }
 
     public function create(Request $request): JsonResponse

@@ -28,7 +28,7 @@ class CreateElasticsearchIndexMapping extends Command
      *
      * @return void
      */
-    public function __construct(private Client $elasticsearch)
+    public function __construct(private ?Client $elasticsearch)
     {
         parent::__construct();
     }

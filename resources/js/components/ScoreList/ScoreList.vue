@@ -140,7 +140,7 @@ export default {
                     margin-top: 0.5rem;
 
                     .tag {
-                        background: lightgrey;
+                        background: lighten(#33C3F0, 30);
                         font-weight: bold;
                         font-size: 0.8em;
                         padding: 0.25rem 0.75rem;
@@ -150,7 +150,8 @@ export default {
                         align-items: center;
 
                         i {
-
+                            margin-right: 0.25em;
+                            transform: scale(0.8);
                         }
                     }
                 }

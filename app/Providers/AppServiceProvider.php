@@ -16,9 +16,11 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(Client::class, function ($app) {
-            return ClientBuilder::create()
-                ->setHosts($app['config']->get('services.search.hosts'))
-                ->build();
+            if ($app['config']->get('services.search.enabled')) {
+                return ClientBuilder::create()
+                    ->setHosts($app['config']->get('services.search.hosts'))
+                    ->build();
+            }
         });
     }
 
