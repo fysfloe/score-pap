@@ -127,7 +127,7 @@ export default {
                 h2 {
                     font-size: 2rem;
                     font-weight: bold;
-                    margin-bottom: 0.5rem;
+                    margin-bottom: 0;
                 }
 
                 .row {

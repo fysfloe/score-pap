@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Score;
 use App\Repositories\ScoreRepository;
+use Illuminate\Contracts\Filesystem\FileExistsException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -20,15 +21,9 @@ class ScoreController extends Controller
         );
     }
 
-    public function get(int $id): JsonResponse
+    public function get(Score $score): JsonResponse
     {
-        if (env('ELASTICSEARCH_ENABLED')) {
-            return response()->json(
-                $this->scoreRepository->search("_id:$id")[0]
-            );
-        } else {
-            return response()->json(Score::find($id));
-        }
+        return response()->json($score);
     }
 
     public function create(Request $request): JsonResponse
@@ -41,48 +36,67 @@ class ScoreController extends Controller
 
         $file = $request->get('file');
 
-        $fileContent = base64_decode($file['data']);
-        $filePath = 'public/scores/' . $file['name'];
+        $score = new Score($request->all());
 
-        if (Storage::disk('local')->exists($filePath)) {
+        try {
+            $score = $this->uploadFile($file, $score);
+        } catch (FileExistsException $e) {
             return response()->json(['error' => 'Datei existiert bereits.'], 400);
         }
-
-        Storage::disk('local')->put($filePath, $fileContent);
-
-        $score = new Score($request->all());
-        $score->file_path = str_replace('public/', '', $filePath);
 
         $score->save();
 
         return response()->json($score);
     }
 
-    public function edit(Request $request, Score $score): JsonResponse
+    public function edit(Score $score, Request $request): JsonResponse
     {
         $request->validate([
             'title' => 'required|max:255',
             'author' => 'required|max:255',
-            //'file' => 'required'
+            'file' => 'required'
         ]);
 
         $scoreInput = $request->all();
 
         $file = $request->get('file');
 
-//        $fileContent = base64_decode($file['data']);
-//        $filePath = 'public/scores/' . $file['name'];
-//
-//        if (Storage::disk('local')->exists($filePath)) {
-//            return response()->json(['error' => 'Datei existiert bereits.'], 400);
-//        }
-//
-//        Storage::disk('local')->put($filePath, $fileContent);
-//
-//        $score->file_path = str_replace('public/', '', $filePath);
+        if (!empty($file['data'])) {
+            if (Storage::disk('local')->exists('public/' . $score->file_path)) {
+                Storage::disk('local')->delete('public/' . $score->file_path);
+            }
+
+            try {
+                $score = $this->uploadFile($file, $score);
+            } catch (FileExistsException $e) {
+                return response()->json(['error' => 'Datei existiert bereits.'], 400);
+            }
+        }
 
         $score->update($scoreInput);
 
         return response()->json($score);
+    }
+
+    /**
+     * @param array $file
+     * @param Score $score
+     * @return Score
+     * @throws FileExistsException
+     */
+    protected function uploadFile(array $file, Score $score): Score
+    {
+        $fileContent = base64_decode($file['data']);
+        $filePath = 'public/scores/' . $file['name'];
+
+        if (Storage::disk('local')->exists($filePath)) {
+            throw new FileExistsException();
+        }
+
+        Storage::disk('local')->put($filePath, $fileContent);
+
+        $score->file_path = str_replace('public/', '', $filePath);
+
+        return $score;
     }
 }
